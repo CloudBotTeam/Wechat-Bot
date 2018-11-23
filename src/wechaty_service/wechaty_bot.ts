@@ -1,8 +1,19 @@
-import { Wechaty } from "wechaty";
+import { Wechaty, Room } from "wechaty";
 import * as QrcodeTerminal from "qrcode-terminal";
-import { from } from "rxjs";
+import { RequestEvent } from "src/Entity/request";
+import { RespMessage } from "src/Entity/response";
 
-var wechaty = Wechaty.instance({puppet: "wechaty-puppet-wechat4u"});
+var wechatyCallbackUrl = null;
+// var wechaty = Wechaty.instance({ puppet: "wechaty-puppet-wechat4u" });
+var wechaty = Wechaty.instance({puppet: 'wechaty-puppet-puppeteer'});
+
+enum LoginStatus {
+  Login = 1,
+  Logout
+}
+
+var log_status: LoginStatus = LoginStatus.Logout;
+
 wechaty
   .on("scan", (url, code, data) => {
     console.log(`Scan QR Code to login: ${code}\n${url}`);
@@ -11,24 +22,67 @@ wechaty
       QrcodeTerminal.generate(loginUrl);
     }
   })
-//   .on("login", user => console.log(`User ${user} logined`))
-//   .on("logout", () => {
-//     console.log("user logout");
-//   })
-//   .on("message", async message => {
-//     // if (message.self()) {
-//     //   console.log("myself message");
-//     //   return;
-//     // }
+  .on("message", async message => {
+    let room = message.room();
+    if (!room) {
+      console.log("The message is not a room message");
+      return;
+    }
+    // pass the test
 
-//     let room = message.room();
-//     if (!room) {
-//       return;
-//     }
-//     // console.log(`Message: ${message}`);
-//     console.log(message);
-//     // console.log(room);
-//   });
+    // await room.say(
+    //   "额"
+    // );
+    if (wechatyCallbackUrl == null) {
+      let sendMsg: RequestEvent = {
+        room: await room.topic(),
+        message: [
+          {
+            type: "text",
+            data: {
+              text: "hey, nmsl"
+            }
+          }
+        ]
+      };
+      console.log(sendMsg);
+    }
+  })
+  .on("login", async user => {
+    console.log(`User ${user} logined`)
+    log_status = LoginStatus.Login
+    // await sendMsgWithResp({
+    //   room_id: "Magic World-微信版",
+    //   auto_escape: false,
+    //   message: "测试一下"
+    // });
+  })
+  .on("logout", () => {
+    console.log("user logout");
+    log_status = LoginStatus.Logout
+  });
 
+
+async function sendMsgWithResp(resp: RespMessage) {
+  if (log_status !== LoginStatus.Login) {
+    console.log("call sendMsgWithResp, but not login in the system.")
+  }
+  let room_topic = resp.room_id;
+  console.log(`room topic is ${room_topic}`)
+
+  let room = await wechaty.Room.find({topic: room_topic})
+  
+  if (!room) {
+    console.log("Room not exists")
+    return
+  }
+  console.log("Find room and ready to say something")
+  await room.say(resp.message);
+}
 
 export default wechaty;
+
+export {
+  wechatyCallbackUrl,
+  sendMsgWithResp
+}
