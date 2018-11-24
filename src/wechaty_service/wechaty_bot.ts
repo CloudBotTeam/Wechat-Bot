@@ -2,6 +2,7 @@ import { Wechaty, Room } from "wechaty";
 import * as QrcodeTerminal from "qrcode-terminal";
 import { RequestEvent } from "src/Entity/request";
 import { RespMessage } from "src/Entity/response";
+import Axios from "axios";
 
 var wechatyCallbackUrl = null;
 // var wechaty = Wechaty.instance({ puppet: "wechaty-puppet-wechat4u" });
@@ -28,6 +29,11 @@ wechaty
       console.log("The message is not a room message");
       return;
     }
+
+    // test data
+    if (await message.mentionSelf() ) {
+      console.log("The robot was mentioned.")
+    }
     // pass the test
 
     // await room.say(
@@ -45,7 +51,19 @@ wechaty
           }
         ]
       };
+      // the data about @
+      if (await message.mentionSelf()) {
+        // add at me in this situation
+        sendMsg.message.push({
+          type: "at",
+        
+          data: {
+            at_me: true
+          }
+        })
+      }
       console.log(sendMsg);
+      await Axios.post(wechatyCallbackUrl, )
     }
   })
   .on("login", async user => {

@@ -4,6 +4,7 @@ interface MessageData {
     text?: string
     id?: string
     qq?: string
+    at_me?: boolean
 }
 
 interface MessageSegment {
