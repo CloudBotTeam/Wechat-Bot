@@ -23,8 +23,8 @@ wechaty
     console.log(`Scan QR Code to login: ${code}\n${url}`);
     if (!/201|200/.test(String(code))) {
       console.log(url);
-      connectURL = url;
-      const loginUrl = url.replace(/\/qrcode\//, '/l/');
+      const loginUrl = url.replace(/\/l\//, '/qrcode/');
+      connectURL = loginUrl;
       console.log(loginUrl);
       QrcodeTerminal.generate(loginUrl);
     }

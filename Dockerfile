@@ -9,4 +9,5 @@ RUN npm install
 COPY . /usr/src/app
 
 EXPOSE 5700
+
 CMD ["npm", "run", "start:prod"]
