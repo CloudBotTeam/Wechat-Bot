@@ -16,8 +16,10 @@ interface MessageSegment {
 
 // }
 interface RequestEvent {
-    room: string,
-    message: MessageSegment[]
+    group_id: string,
+    message: MessageSegment[],
+    platform: string, // wechat
+
 }
 
 export {
