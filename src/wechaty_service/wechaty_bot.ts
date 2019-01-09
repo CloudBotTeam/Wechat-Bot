@@ -1,14 +1,12 @@
 import { Wechaty, Room } from "wechaty";
-import * as QrcodeTerminal from "qrcode-terminal";
 import { RequestEvent } from "src/Entity/request";
 import { RespMessage } from "src/Entity/response";
 import axios from "axios";
-import { platform } from 'os';
 
 var wechatyCallbackUrl: string = 'http://localhost:8101';
 
 // var wechaty = Wechaty.instance({ puppet: "wechaty-puppet-wechat4u" });
-var wechaty = Wechaty.instance({puppet: 'wechaty-puppet-puppeteer'});
+var wechaty = Wechaty.instance({puppet: 'wechaty-puppet-wechat4u'});
 
 enum LoginStatus {
   Login = 1,
@@ -26,7 +24,7 @@ wechaty
       const loginUrl = url.replace(/\/l\//, '/qrcode/');
       connectURL = loginUrl;
       console.log(loginUrl);
-      QrcodeTerminal.generate(loginUrl);
+      // QrcodeTerminal.generate(loginUrl);
     }
   })
   .on('message', async message => {
